@@ -1,8 +1,7 @@
 import React from "react";
 import classes from './errors.module.css';
 const Errors = () => {
-    return ( <
-        div className = { classes.errorpagewrap } >
+    return ( <div className = { classes.errorpagewrap } >
         <
         article className = {
             [classes.errorpage, classes.gradient].join(' ') } >

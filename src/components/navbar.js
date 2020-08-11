@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Nav, Navbar, Form, InputGroup, FormControl, Button } from 'react-bootstrap';
+import {  Navbar, Form,  FormControl, Button } from 'react-bootstrap';
 
 import Aux from '../hoc/Aux1/Aux1';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -16,43 +16,30 @@ const Toolbar = (props) => {
 
     const callSearchFunction = (e) => {
         e.preventDefault();
-        props.search(searchValue);
+        props.search(searchValue,1);
         resetInputField();
     }
 
     return (
 
-        <
-        Aux >
+        <Aux >
+        < Navbar bg = "light" expand = "lg" style = {{ marginBottom: '20px' } }>
 
-
-        <
-        Navbar bg = "light"
-        expand = "lg"
-        style = {
-            { marginBottom: '20px' } } >
-
-        <
-        Navbar.Brand href = "/" > Home < /Navbar.Brand> <
-        Navbar.Toggle / >
-        <
-        Navbar.Collapse id = "basic-navbar-nav" >
-        <
-        Form inline style = {
+        <Navbar.Brand href = "/" > Home </Navbar.Brand> 
+        <Navbar.Toggle />
+        <Navbar.Collapse id = "basic-navbar-nav" >
+        <Form inline style = {
             { marginLeft: 'auto' } } >
-        <
-        FormControl type = "text"
+        <FormControl type = "text"
         placeholder = "Search"
         value = { searchValue }
         onChange = { handleSearchInputChanges }
         className = "mr-sm-2" / >
-        <
-        Button variant = "primary"
-        onClick = { callSearchFunction } > Search < /Button> <
-        /Form> <
-        /Navbar.Collapse> <
-        /Navbar> <
-        /Aux>
+        <Button variant = "primary" onClick = { callSearchFunction } > Search </Button>
+         </Form> 
+         </Navbar.Collapse> 
+         </Navbar> 
+         </Aux>
 
     )
 }

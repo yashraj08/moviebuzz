@@ -6,24 +6,29 @@ import Aux from '../hoc/Aux1/Aux1';
 import Toolbar from '../components/navbar';
 import Errors from '../components/errors';
 import Spinner from '../components/spinner';
+import Movie from '../components/movie';
 
 const Content = () => {
 
     const [error, setError] = useState(false);
-    const [episodes, setEpisodes] = useState([]);
-    const [nextPage, setNext] = useState(null);
-    const [prevPage, setPrev] = useState(null);
-    const [page, setPage] = useState(0);
-    const [totalPage, setTotalPage] = useState(0);
-    async function fetchData(apiurl) {
-        const res = await fetch(apiurl)
+    const [datas, setData] = useState([]);
+    // const [totalData, setTotaldata] = useState(0);
+    const [searchValues,setsearchValues]=useState();
+    const [currPage,setCurrPage] = useState(0);
+    const [perPage,setPerPage] =useState(10);
+    const [totalPage,setTotalPage] =useState(0);
+    const [currData,setCurrData] = useState([]);
+    const [type, setType] = useState(0);
+    const [movieData, setMovieData] = useState({});
+
+    async function fetchData(apiurl,page) {
+         await fetch(apiurl)
             .then(res => res.json())
             .then(res => {
-
-                setEpisodes(res.results);
-                setNext(res.info.next);
-                setPrev(res.info.prev);
-                setTotalPage(res.info.pages);
+                setData(res.Search);
+                setTotalPage(Math.ceil(res.totalResults/perPage));
+                setCurrPage(page);
+                
 
             })
             .catch(err => {
@@ -34,74 +39,94 @@ const Content = () => {
 
             });
     }
+    async function fetchedData(apiurl) {
+         await fetch(apiurl)
+            .then(res => res.json())
+            .then(res => {
+                console.log(res);
+                setMovieData(res);
+                console.log(movieData);
+            })
+            .catch(err => {
+
+                setError(true);
+                console.log(error);
+
+
+            });
+    }
     useEffect(() => {
-        fetchData("https://rickandmortyapi.com/api/episode/");
-        //console.log(episodes);
+        setType(0);
+        setError(false);
+
+        
     }, []);
-    const search = searchValue => {
 
-        const url1 = "https://rickandmortyapi.com/api/episode/?name=";
-        let url2 = url1.concat(searchValue);
-        fetchData(url2);
-
-    };
     const handlePageClick = (e) => {
-
-        setPage(e.selected);
         console.log(e.selected);
-        if (e.selected === 1)
-            fetchData(nextPage);
-        else
-            fetchData(prevPage);
+         let p=e.selected+1;
+         console.log(searchValues);
+         const url1 = " http://www.omdbapi.com/?apikey=44cb35cd&s="+searchValues+"&page="+p;
+         fetchData(url1,p);        
+     }; 
 
-    };
 
-    //    if( typeof episodes === 'undefined' ){
-    //        return (
-    //         <Aux>
-    //         <Toolbar search={search}/>
-    //            <Errors/>
-    //         </Aux>
-    //        )
-    //    }
-    return ( <
-        Aux >
-        <
-        Toolbar search = { search }
-        /> {
-            typeof episodes === 'undefined' ? ( <
-                Errors / >
-            ) : ( < div style = {
-                    { backgroundColor: '#659DBD' } } > {
-                    episodes.map(epi => ( <
-                        Data key = { epi.id }
-                        episode = { epi }
-                        />
-                    ))
-                } <
-                div style = {
-                    { display: 'inline-flex', backgroundColor: 'rgba(0,0,0,.03)' } } >
-                <
-                ReactPaginate previousLabel = { "prev" }
-                nextLabel = { "next" }
-                breakLabel = { "..." }
-                breakClassName = { "break-me" }
-                pageCount = { totalPage }
-                marginPagesDisplayed = { 2 }
-                pageRangeDisplayed = { 2 }
-                onPageChange = { handlePageClick }
-                containerClassName = { "pagination" }
-                subContainerClassName = { "pages pagination" }
-                activeClassName = { "active" }
-                />  <
-                /div> <
-                /div>
+    const search = (searchValue, type) => {
+        setType(type);
+        setsearchValues(searchValue);
+        let url2;
+        if (type === 1) {
+        
+            const url1 = " http://www.omdbapi.com/?apikey=44cb35cd&s=";
+            url2 = url1.concat(searchValue);
+            fetchData(url2,1);
 
-            )
+        } else if (type === 2) {
+            const url1 = " http://www.omdbapi.com/?apikey=44cb35cd&i="+searchValue+"&plot=full";
+           
+            fetchedData(url1);
         }
 
-        <
-        /Aux>
-    );
+
+    };
+    return ( 
+    <Aux>
+        <Toolbar search = { search }/>
+         {type === 0 ? <div> Welcome </div>
+                :(type === 1 ?
+                    <div style = {{ backgroundColor: '#659DBD' } } > {
+                        datas.map(epi => ( <
+                            Data key = { epi.imdbID }
+                            episode = { epi }
+                            search = { search }
+                            />
+                         ))
+                    } 
+                    <div style = 
+                    {{ display: 'inline-flex', backgroundColor: 'rgba(0,0,0,.03)' } } > 
+                      {
+                     <ReactPaginate previousLabel = { "prev" }
+                                            nextLabel = { "next" }
+                                            breakLabel = { "..." }
+                                            breakClassName = { "break-me" }
+                                            pageCount = { totalPage }
+                                            marginPagesDisplayed = { 5 }
+                                            pageRangeDisplayed = {5}
+                                            onPageChange = { handlePageClick }
+                                            containerClassName = { "pagination" }
+                                            subContainerClassName = { "pages pagination" }
+                                            activeClassName = { "active" }/>   
+                    } 
+                    </div>  
+                    </div>
+                :<div style = {{ backgroundColor: '#659DBD', height:'80%'}} >
+                    < Movie episode = { movieData }/>
+                </div>
+        )
+    }
+
+    </Aux>
+);
 }
-export default Content;
+
+export default Content; 
